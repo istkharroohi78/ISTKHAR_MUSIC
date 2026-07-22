@@ -1,7 +1,18 @@
+# -----------------------------------------------
+# 🔸 ISTKHAR MUSIC Project
+# 🔹 Developed & Maintained by: Shashank ISTKHAR (https://github.com/TEAM-ISTKHAR)
+# 📅 Copyright © 2022 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by TEAM-ISTKHAR
+# -----------------------------------------------
 from pyrogram import filters
 from pyrogram.types import Message
-
-from config import BANNED_USERS, adminlist
 from ISTKHAR_MUSIC import app
 from ISTKHAR_MUSIC.core.call import ISTKHAR
 from ISTKHAR_MUSIC.misc import SUDOERS, db
@@ -9,6 +20,7 @@ from ISTKHAR_MUSIC.utils import AdminRightsCheck
 from ISTKHAR_MUSIC.utils.database import is_active_chat, is_nonadmin_chat
 from ISTKHAR_MUSIC.utils.decorators.language import languageCB
 from ISTKHAR_MUSIC.utils.inline import close_markup, speed_markup
+from config import BANNED_USERS, adminlist
 
 checker = []
 
@@ -38,7 +50,7 @@ async def playback(cli, message: Message, _, chat_id):
 
 @app.on_callback_query(filters.regex("SpeedUP") & ~BANNED_USERS)
 @languageCB
-async def manage_callback(client, CallbackQuery, _):
+async def del_back_playlist(client, CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
     callback_request = callback_data.split(None, 1)[1]
     chat, speed = callback_request.split("|")
@@ -109,4 +121,4 @@ async def manage_callback(client, CallbackQuery, _):
     await mystic.edit_text(
         text=_["admin_34"].format(speed, CallbackQuery.from_user.mention),
         reply_markup=close_markup(_),
-    )
+  )
