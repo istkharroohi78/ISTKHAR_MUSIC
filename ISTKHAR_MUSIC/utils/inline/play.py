@@ -1,241 +1,214 @@
+# -----------------------------------------------
+# 🔸 ISTKHAR MUSIC Project
+# 🔹 Developed & Maintained by: Shashank ISTKHAR (https://github.com/TEAM-ISTKHAR)
+# 📅 Copyright © 2022 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by TEAM-ISTKHAR
+# -------------------------------------
+
 import math
-import random
-from pyrogram.enums import ButtonStyle
-from pyrogram.types import InlineKeyboardButton
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from ISTKHAR_MUSIC import app
+import config
+from pyrogram.enums import ButtonStyle
 from ISTKHAR_MUSIC.utils.formatters import time_to_seconds
 
-# 🎨 Dynamic Color Generator
-def get_style_map():
-    styles = [ButtonStyle.PRIMARY, ButtonStyle.SUCCESS, ButtonStyle.DANGER]
-    random.shuffle(styles)
-    # Guaranteed to give 3 distinct colors
-    return {1: styles[0], 2: styles[1], 3: styles[2]}
 
-
-# 🎵 TRACK BUTTON
 def track_markup(_, videoid, user_id, channel, fplay):
-    sm = get_style_map()
-    return [
+    buttons = [
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
                 callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
-                style=sm[1]
             ),
             InlineKeyboardButton(
                 text=_["P_B_2"],
                 callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
-                style=sm[2]
             ),
         ],
         [
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {videoid}|{user_id}",
-                style=sm[3]
             )
         ],
     ]
+    return buttons
 
 
-# 🎛 PLAYER WITH TIMER (NEW PROGRESS BAR)
 def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
-    sm = get_style_map()
-
-    # 🔥 Progress Bar ▰▱
-    total_blocks = 10
-    filled_blocks = int((played_sec / duration_sec) * total_blocks) if duration_sec != 0 else 0
-    bar = "▰" * filled_blocks + "▱" * (total_blocks - filled_blocks)
-
+    percentage = (played_sec / duration_sec) * 100
+    
+    umm = math.floor(percentage)
+    if 0 < umm <= 10:
+        bar = "▣—————————"
+    elif 10 < umm < 20:
+        bar = "—▣————————"
+    elif 20 <= umm < 30:
+        bar = "—▣———————"
+    elif 30 <= umm < 40:
+        bar = "——▣——————"
+    elif 40 <= umm < 50:
+        bar = "———▣—————"
+    elif 50 <= umm < 60:
+        bar = "————▣————"
+    elif 60 <= umm < 70:
+        bar = "—————▣———"
+    elif 70 <= umm < 80:
+        bar = "——————▣——"
+    elif 80 <= umm < 95:
+        bar = "———————▣—"
+    else:
+        bar = "————————▣"
     buttons = [
-        # ⏱ Timer + Bar (Color 1)
         [
             InlineKeyboardButton(
                 text=f"{played} {bar} {dur}",
                 callback_data="GetTimer",
-                style=sm[1]
+                style=ButtonStyle.PRIMARY,
+                icon_custom_emoji_id=5204046146955153467
             )
         ],
-
-        # 🎮 Controls (Color 2 - Distinct from Timer)
         [
-            InlineKeyboardButton("▷", callback_data=f"ADMIN Resume|{chat_id}", style=sm[2]),
-            InlineKeyboardButton("II", callback_data=f"ADMIN Pause|{chat_id}", style=sm[2]),
-            InlineKeyboardButton("↻", callback_data=f"ADMIN Replay|{chat_id}", style=sm[2]),
-            InlineKeyboardButton("‣‣I", callback_data=f"ADMIN Skip|{chat_id}", style=sm[2]),
-            InlineKeyboardButton("▢", callback_data=f"ADMIN Stop|{chat_id}", style=sm[2]),
+            InlineKeyboardButton(text="", callback_data=f"ADMIN Resume|{chat_id}", icon_custom_emoji_id=5409222721869459068, style=ButtonStyle.SUCCESS),
+            InlineKeyboardButton(text="", callback_data=f"ADMIN Pause|{chat_id}", icon_custom_emoji_id=5409042015415448331, style=ButtonStyle.PRIMARY),
+            InlineKeyboardButton(text="", callback_data=f"ADMIN Stop|{chat_id}", icon_custom_emoji_id=5408832111773757273, style=ButtonStyle.DANGER),
         ],
-
-        # 🔥 Autoplay Row (Color 3 - Distinct from Controls)
         [
             InlineKeyboardButton(
-                text="❖ 𝐀ᴜᴛᴏ𝐏ʟᴀʏ ❖", 
+                text="ᴀᴜᴛᴏᴘʟᴀʏ",
                 callback_data=f"ADMIN Autoplay|{chat_id}",
-                style=sm[3]
-            )
+                icon_custom_emoji_id=6271653280187684816,
+                style=ButtonStyle.PRIMARY,
+            ),
         ],
-
-        # 🎯 Bottom Buttons
         [
             InlineKeyboardButton(
-                "✚ ᴀᴅᴅ ᴍᴇ ✚",
-                url=f"https://t.me/{app.username}?startgroup=true",
-                style=sm[1]
+                text="ᴜᴘᴅᴀᴛᴇ",
+                url=config.SUPPORT_CHANNEL,
+                icon_custom_emoji_id=5409025823388741707,
+                style=ButtonStyle.SUCCESS
             ),
             InlineKeyboardButton(
-                "• ᴄʟᴏꜱᴇ •",
-                callback_data="close",
-                style=sm[2]
+                text="sᴜᴘᴘᴏꝛᴛ",
+                url=config.SUPPORT_CHAT,
+                icon_custom_emoji_id=5409194306365829029,
+                style=ButtonStyle.PRIMARY
+            )
+        ],
+        [InlineKeyboardButton(text=" ᴄʟᴏsᴇ ▣", callback_data="close", style=ButtonStyle.DANGER, icon_custom_emoji_id=5408832111773757273)],
+    ]
+    return buttons
+
+
+def stream_markup(_, chat_id):
+    buttons = [
+        [
+            InlineKeyboardButton(text="", callback_data=f"ADMIN Resume|{chat_id}", icon_custom_emoji_id=5409222721869459068, style=ButtonStyle.SUCCESS),
+            InlineKeyboardButton(text="", callback_data=f"ADMIN Pause|{chat_id}", icon_custom_emoji_id=5409042015415448331, style=ButtonStyle.PRIMARY),
+            InlineKeyboardButton(text="", callback_data=f"ADMIN Stop|{chat_id}", icon_custom_emoji_id=5408832111773757273, style=ButtonStyle.DANGER),
+        ],
+        [
+            InlineKeyboardButton(
+                text="ᴀᴜᴛᴏᴘʟᴀʏ",
+                callback_data=f"ADMIN Autoplay|{chat_id}",
+                icon_custom_emoji_id=6271653280187684816,
+                style=ButtonStyle.PRIMARY,
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="ᴜᴘᴅᴀᴛᴇ",
+                url=config.SUPPORT_CHANNEL,
+                icon_custom_emoji_id=5409025823388741707,
+                style=ButtonStyle.SUCCESS
+            ),
+            InlineKeyboardButton(
+                text="sᴜᴘᴘᴏꝛᴛ",
+                url=config.SUPPORT_CHAT,
+                icon_custom_emoji_id=5409194306365829029,
+                style=ButtonStyle.PRIMARY
+            )
+        ],
+        [InlineKeyboardButton(text=" ᴄʟᴏsᴇ ▣", callback_data="close", style=ButtonStyle.DANGER, icon_custom_emoji_id=5408832111773757273)],
+    ]
+    return buttons
+
+def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
+    buttons = [
+        [
+            InlineKeyboardButton(
+                text=_["P_B_1"],
+                callback_data=f"ISTKHARPlaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
+            ),
+            InlineKeyboardButton(
+                text=_["P_B_2"],
+                callback_data=f"ISTKHARPlaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text=_["CLOSE_BUTTON"],
+                callback_data=f"forceclose {videoid}|{user_id}",
             ),
         ],
     ]
     return buttons
 
 
-# 🎛 PLAYER WITHOUT TIMER
-def stream_markup(_, chat_id):
-    sm = get_style_map()
-    return [
-        # 🎮 Controls (Color 1)
-        [
-            InlineKeyboardButton("▷", callback_data=f"ADMIN Resume|{chat_id}", style=sm[1]),
-            InlineKeyboardButton("II", callback_data=f"ADMIN Pause|{chat_id}", style=sm[1]),
-            InlineKeyboardButton("↻", callback_data=f"ADMIN Replay|{chat_id}", style=sm[1]),
-            InlineKeyboardButton("‣‣I", callback_data=f"ADMIN Skip|{chat_id}", style=sm[1]),
-            InlineKeyboardButton("▢", callback_data=f"ADMIN Stop|{chat_id}", style=sm[1]),
-        ],
-        # 🔥 Autoplay Row (Color 2)
-        [
-            InlineKeyboardButton(
-                text="❖ 𝐀ᴜᴛᴏ𝐏ʟᴀʏ ❖", 
-                callback_data=f"ADMIN Autoplay|{chat_id}",
-                style=sm[2]
-            )
-        ],
-        # 🎯 Bottom Buttons
-        [
-            InlineKeyboardButton(
-                "✚ ᴀᴅᴅ ᴍᴇ ✚",
-                url=f"https://t.me/{app.username}?startgroup=true",
-                style=sm[3]
-            ),
-            InlineKeyboardButton(
-                "• ᴄʟᴏꜱᴇ •",
-                callback_data="close",
-                style=sm[1]
-            ),
-        ],
-    ]
-
-
-# ❖ AUTOPLAY PANEL BUTTONS ❖
-def autoplay_markup(chat_id):
-    sm = get_style_map()
-    return [
-        [
-            InlineKeyboardButton(
-                text="✨ ᴇɴᴀʙʟᴇ",
-                callback_data=f"ADMIN AutoOn|{chat_id}",
-                style=sm[2]
-            ),
-            InlineKeyboardButton(
-                text="⚡ ᴅɪsᴀʙʟᴇ",
-                callback_data=f"ADMIN AutoOff|{chat_id}",
-                style=sm[3]
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text="🔙 ʙᴀᴄᴋ ᴛᴏ ᴘʟᴀʏᴇʀ",
-                callback_data=f"ADMIN AutoRefresh|{chat_id}",
-                style=sm[1]
-            )
-        ]
-    ]
-
-
-# 🎶 PLAYLIST
-def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
-    sm = get_style_map()
-    return [
-        [
-            InlineKeyboardButton(
-                text=_["P_B_1"],
-                callback_data=f"ROOHIPlaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
-                style=sm[1]
-            ),
-            InlineKeyboardButton(
-                text=_["P_B_2"],
-                callback_data=f"ROOHIPlaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
-                style=sm[2]
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
-                callback_data=f"forceclose {videoid}|{user_id}",
-                style=sm[3]
-            ),
-        ],
-    ]
-
-
-# 🔴 LIVE STREAM
 def livestream_markup(_, videoid, user_id, mode, channel, fplay):
-    sm = get_style_map()
-    return [
+    buttons = [
         [
             InlineKeyboardButton(
                 text=_["P_B_3"],
                 callback_data=f"LiveStream {videoid}|{user_id}|{mode}|{channel}|{fplay}",
-                style=sm[1]
             ),
         ],
         [
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {videoid}|{user_id}",
-                style=sm[3]
             ),
         ],
     ]
+    return buttons
 
 
-# 🎚 SLIDER
 def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
     query = f"{query[:20]}"
-    sm = get_style_map()
-    return [
+    buttons = [
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
                 callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
-                style=sm[1]
             ),
             InlineKeyboardButton(
                 text=_["P_B_2"],
                 callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
-                style=sm[2]
             ),
         ],
         [
             InlineKeyboardButton(
                 text="◁",
                 callback_data=f"slider B|{query_type}|{query}|{user_id}|{channel}|{fplay}",
-                style=sm[1]
             ),
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {query}|{user_id}",
-                style=sm[3]
             ),
             InlineKeyboardButton(
                 text="▷",
                 callback_data=f"slider F|{query_type}|{query}|{user_id}|{channel}|{fplay}",
-                style=sm[2]
             ),
         ],
     ]
+    return buttons
+    
