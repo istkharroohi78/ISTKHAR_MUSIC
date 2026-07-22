@@ -20,7 +20,7 @@ indic-transliteration
 kurigram==2.2.19
 motor
 nekosbest
-ntgcalls==2.1.0
+ntgcalls==2.2.5
 numpy
 opencv-python
 pillow==9.5.0
