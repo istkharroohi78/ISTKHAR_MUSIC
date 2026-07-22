@@ -25,7 +25,7 @@ numpy
 opencv-python
 pillow==9.5.0
 psutil
-py-tgcalls==2.2.11
+py-tgcalls==2.3.3
 py-yt-search
 pycryptodome
 pydub
